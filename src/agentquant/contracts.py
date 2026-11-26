@@ -19,14 +19,21 @@ class BaselineSource(Contract):
     baseline_id: Identifier
 
 
+class ArchiveSource(Contract):
+    kind: Literal["archive"]
+    upload_id: UUID
+
+
 class CreateSubmission(Contract):
     name: Title
-    source: BaselineSource
+    source: Annotated[BaselineSource | ArchiveSource, Field(discriminator="kind")]
 
 
 class Submission(CreateSubmission):
     id: UUID
     created_at: datetime
+    version: int | None = None
+    artifact_sha256: str | None = None
 
 
 class CreateRun(Contract):
@@ -41,6 +48,8 @@ class RunSpec(Contract):
     dataset_id: Identifier
     rules_version: Identifier
     seed: int = 0
+    kind: Literal["validation", "official"] = "validation"
+    dataset_sha256: str | None = None
 
 
 class Metrics(Contract):
@@ -65,6 +74,13 @@ class Trade(Contract):
     fee: Decimal
 
 
+class TradePage(Contract):
+    offset: int
+    limit: int
+    total: int
+    items: tuple[Trade, ...]
+
+
 class EvaluationResult(Contract):
     metrics: Metrics
     equity: tuple[EquityPoint, ...]
@@ -76,6 +92,10 @@ class RunError(Contract):
     message: str
 
 
+class ErrorResponse(RunError):
+    request_id: UUID
+
+
 class Run(Contract):
     id: UUID
     submission_id: UUID
@@ -84,6 +104,7 @@ class Run(Contract):
     status: RunStatus
     created_at: datetime
     error: RunError | None = None
+    kind: Literal["validation", "official"] = "validation"
 
 
 class CatalogEntry(Contract):

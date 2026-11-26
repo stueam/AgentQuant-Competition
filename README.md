@@ -4,7 +4,7 @@
 
 ## 本地开发
 
-当前可运行提交、验证任务和评测结果的联调骨架。API 与 Worker 通过同一个本地 SQLite 文件交接任务。Web 提供两支内置策略，评测使用四天人工行情。正式赛事规则与后续部署见下文。
+后端可用人工行情演练从注册组队、策略提交、验证和封榜，到正式评测、报告评审和发榜的流程。API 与独立 Worker 默认共用 `.agentquant/local.sqlite3`，可以用 `AGENTQUANT_DB` 指定同一个数据库文件。现有 Web 演示可使用两支内置策略。
 
 准备 uv 和 Node.js 22.12 或更新版本。仓库设置默认 Python 3.12。在仓库根目录安装后端依赖。
 
@@ -37,7 +37,17 @@ uv run --locked python -m agentquant.demo
 uv run --locked pytest
 ```
 
-三个人分别负责 Web、赛务后端、评测与策略运行。数据接入是独立工作包，按版本交付数据集。当前接口、首轮任务和联调验收见[开发计划](赛道2开发计划.md#三人小队开工)与[接口说明](contracts/README.md)。
+### 登录和赛事联调
+
+设置 `AGENTQUANT_ALLOW_DEMO=0` 启动 API，即可用认证模式联调。HTTPS 环境同时设置 `AGENTQUANT_SECURE_COOKIE=1`。在 API 所用的数据库上签发注册邀请码，角色可选 `participant`、`organizer` 或 `reviewer`。
+
+```powershell
+uv run --locked python -m agentquant.accounts participant
+```
+
+可通过 `/docs` 或 HTTP 客户端演练赛务流程。登录后，写请求需要传入登录响应中的 `csrf_token`，请求头为 `X-CSRF-Token`。启动时会迁移旧版 SQLite 文件中的提交和任务。完整请求顺序见[接口说明](contracts/README.md)。
+
+策略 ZIP 支持结构校验、下载和版本留存。正式开放选手策略运行需要接入评测侧沙箱。真实行情由独立数据工作包交付，正式部署和验收安排见[开发计划](赛道2开发计划.md#11-部署与上线验收)。
 
 ## 1. 赛题与参赛流程
 

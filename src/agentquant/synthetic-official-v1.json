@@ -1,0 +1,51 @@
+{
+  "schema_version": "1",
+  "id": "synthetic-official-v1",
+  "days": [
+    {
+      "trading_date": "2026-02-05",
+      "decision_at": "2026-02-05T16:00:00+08:00",
+      "market": [
+        {"asset_id": "A001", "open": "10.00", "close": "10.00"},
+        {"asset_id": "A002", "open": "20.00", "close": "20.00"}
+      ],
+      "factors": [
+        {"asset_id": "A001", "available_at": "2026-02-05T15:50:00+08:00", "values": {"f001": 0.8}},
+        {"asset_id": "A002", "available_at": "2026-02-05T16:10:00+08:00", "values": {"f001": 0.9}}
+      ]
+    },
+    {
+      "trading_date": "2026-02-06",
+      "decision_at": "2026-02-06T16:00:00+08:00",
+      "market": [
+        {"asset_id": "A001", "open": "10.10", "close": "10.22"},
+        {"asset_id": "A002", "open": "20.10", "close": "20.20"}
+      ],
+      "factors": [
+        {"asset_id": "A001", "available_at": "2026-02-06T15:50:00+08:00", "values": {"f001": 0.3}},
+        {"asset_id": "A002", "available_at": "2026-02-06T15:50:00+08:00", "values": {"f001": 0.9}}
+      ]
+    },
+    {
+      "trading_date": "2026-02-09",
+      "decision_at": "2026-02-09T16:00:00+08:00",
+      "market": [
+        {"asset_id": "A001", "open": "10.28", "close": "10.35"},
+        {"asset_id": "A002", "open": "20.50", "close": "20.60", "buyable": false}
+      ],
+      "factors": [
+        {"asset_id": "A001", "available_at": "2026-02-09T15:50:00+08:00", "values": {"f001": 0.7}},
+        {"asset_id": "A002", "available_at": "2026-02-09T15:50:00+08:00", "values": {"f001": 0.8}}
+      ]
+    },
+    {
+      "trading_date": "2026-02-10",
+      "decision_at": "2026-02-10T16:00:00+08:00",
+      "market": [
+        {"asset_id": "A001", "open": "10.35", "close": "10.44"},
+        {"asset_id": "A002", "open": "20.60", "close": "20.70"}
+      ],
+      "factors": []
+    }
+  ]
+}

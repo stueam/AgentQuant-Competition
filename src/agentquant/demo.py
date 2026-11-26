@@ -2,10 +2,10 @@
 
 import argparse
 from functools import cache
-from importlib.resources import files
+from hashlib import sha256
 
 from .contracts import EvaluationResult, RunSpec
-from .demo_catalog import DATASET_ID, RULES_VERSION
+from .demo_catalog import DATASET_ID, RULES_VERSION, dataset_bytes
 from .evaluator import Dataset, Rules, evaluate
 from .sdk import Decision, Keep, Snapshot, StrategyContext, Target, Weight
 
@@ -37,16 +37,20 @@ BASELINES = {"cash": CashStrategy, "factor-rank": FactorRankStrategy}
 
 
 @cache
-def load_dataset(dataset_id: str) -> Dataset:
-    if dataset_id != DATASET_ID:
-        raise ValueError("unknown demo dataset")
-    return Dataset.model_validate_json(files("agentquant").joinpath("synthetic-v1.json").read_bytes())
+def load_dataset(dataset_id: str, expected_sha256: str | None = None) -> Dataset:
+    content = dataset_bytes(dataset_id)
+    if expected_sha256 is not None and sha256(content).hexdigest() != expected_sha256:
+        raise ValueError("dataset differs from the locked snapshot")
+    dataset = Dataset.model_validate_json(content)
+    if dataset.id != dataset_id:
+        raise ValueError("dataset ID differs from its manifest")
+    return dataset
 
 
 def run(spec: RunSpec) -> EvaluationResult:
     if spec.rules_version != RULES.version:
         raise ValueError("unknown demo rules version")
-    return evaluate(load_dataset(spec.dataset_id), BASELINES[spec.baseline_id](), RULES, spec.seed)
+    return evaluate(load_dataset(spec.dataset_id, spec.dataset_sha256), BASELINES[spec.baseline_id](), RULES, spec.seed)
 
 
 def main() -> None:

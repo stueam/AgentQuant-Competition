@@ -48,6 +48,12 @@ def test_http_worker_and_result(tmp_path: Path) -> None:
         ]
         assert result["trades"][0]["asset_id"] == "A001"
         assert result["trades"][0]["shares"] == 5000
+        assert client.get(f"{run_url}/metrics").json() == result["metrics"]
+        assert client.get(f"{run_url}/equity").json() == result["equity"]
+        page = client.get(f"{run_url}/trades?limit=1").json()
+        assert page == {"offset": 0, "limit": 1, "total": len(result["trades"]), "items": result["trades"][:1]}
+        assert client.get(f"{run_url}/trades?offset=10").json()["items"] == []
+        assert client.get("/api/v1/submissions?limit=1&offset=1").json() == [submission]
 
     with TestClient(create_app(database)) as restarted:
         assert restarted.get(f"{run_url}/result").json() == result

@@ -105,6 +105,8 @@ function App() {
     else setPollAttempt((value) => value + 1)
   }
 
+  const baselineNames = new Map(catalog?.baselines.map((entry) => [entry.id, entry.name]))
+
   return (
     <>
       <header className="topbar">
@@ -141,7 +143,7 @@ function App() {
             <ul className="submissions">
               {submissions.map((item) => (
                 <li key={item.id}>
-                  <div><strong>{item.name}</strong><small>{catalog?.baselines.find((entry) => entry.id === item.source.baseline_id)?.name}</small></div>
+                  <div><strong>{item.name}</strong><small>{item.source.kind === 'baseline' ? baselineNames.get(item.source.baseline_id) : '策略 ZIP'}</small></div>
                   <button disabled={busy || pending} onClick={() => void start(item)}>发起验证</button>
                 </li>
               ))}
