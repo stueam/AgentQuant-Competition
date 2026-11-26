@@ -4,7 +4,7 @@
 
 ## 本地开发
 
-后端可用人工行情演练从注册组队、策略提交、验证和封榜，到正式评测、报告评审和发榜的流程。API 与独立 Worker 默认共用 `.agentquant/local.sqlite3`，可以用 `AGENTQUANT_DB` 指定同一个数据库文件。现有 Web 演示可使用两支内置策略。
+参赛工作台提供内置策略提交、历史记录、验证任务与结果查询。后端使用人工行情演练从注册组队到正式评测和发榜的流程。API 与 Worker 默认共用 `.agentquant/local.sqlite3`，可用 `AGENTQUANT_DB` 指定同一个数据库文件。
 
 准备 uv 和 Node.js 22.12 或更新版本。仓库设置默认 Python 3.12。在仓库根目录安装后端依赖。
 
@@ -22,13 +22,17 @@ uv run --locked uvicorn agentquant.api:app --reload
 uv run --locked python -m agentquant.worker
 ```
 
-第三个终端启动前端，打开终端给出的地址（默认 `http://localhost:5173`）。填写提交名称并保存，然后发起验证。API 调试页在 `http://127.0.0.1:8000/docs`。
+第三个终端启动前端，打开终端给出的地址（默认 `http://localhost:5173`）。填写提交名称并保存，然后从提交历史发起验证。结果页可刷新，最近任务可从发起验证的浏览器重新打开。API 调试页在 `http://127.0.0.1:8000/docs`。
 
 ```powershell
 Set-Location apps/web
 npm ci
 npm run dev
 ```
+
+默认可匿名验证内置策略。匿名提交保存在独立的演示范围。使用右上角「登录」进入参赛队伍工作台。
+
+在仓库根目录运行 `npm --prefix apps/web run build` 生成生产构建。托管时将 `/api/` 转发到 FastAPI，并将其他前端路由交给 `index.html`，以支持直接打开验证结果页。
 
 在仓库根目录可单独运行因子排序基线及测试。
 
@@ -45,7 +49,9 @@ uv run --locked pytest
 uv run --locked python -m agentquant.accounts participant
 ```
 
-可通过 `/docs` 或 HTTP 客户端演练赛务流程。登录后，写请求需要传入登录响应中的 `csrf_token`，请求头为 `X-CSRF-Token`。启动时会迁移旧版 SQLite 文件中的提交和任务。完整请求顺序见[接口说明](contracts/README.md)。
+前端支持用注册邀请码创建账号。登录后，通过「我的队伍」创建队伍或用组队码加入，再保存内置策略、发起验证并查看本队结果。组队码只在建队后显示。
+
+可通过 `/docs` 或 HTTP 客户端演练其他赛务流程。已登录的写请求需要传入登录响应中的 `csrf_token`，请求头为 `X-CSRF-Token`，Web 客户端会自动附带。启动时会迁移旧版 SQLite 文件中的提交和任务。完整请求顺序见[接口说明](contracts/README.md)。
 
 策略 ZIP 支持结构校验、下载和版本留存。正式开放选手策略运行需要接入评测侧沙箱。真实行情由独立数据工作包交付，正式部署和验收安排见[开发计划](赛道2开发计划.md#11-部署与上线验收)。
 

@@ -9,8 +9,12 @@
     "generate:api": "openapi-typescript ../../contracts/openapi.json -o src/api.generated.ts"
   },
   "dependencies": {
+    "@tanstack/react-query": "^5.108.4",
+    "echarts": "^6.1.0",
+    "lucide-react": "^1.81.0",
     "react": "^19.0.0",
-    "react-dom": "^19.0.0"
+    "react-dom": "^19.0.0",
+    "react-router-dom": "^7.18.7"
   },
   "devDependencies": {
     "@types/node": "^24.0.0",
